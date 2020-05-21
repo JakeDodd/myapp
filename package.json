@@ -1,0 +1,24 @@
+{
+  "name": "myapp",
+  "version": "1.0.0",
+  "description": "nodejs server",
+  "main": "index.js",
+  "scripts": {
+    "test": "Hello"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JakeDodd/myapp.git"
+  },
+  "author": "Jake",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JakeDodd/myapp/issues"
+  },
+  "homepage": "https://github.com/JakeDodd/myapp#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "pg": "^8.2.1"
+  }
+}
