@@ -8,12 +8,12 @@ const api = express.Router();
 app.use("/api", api);
 
 api.get("/", (req, res) => res.send("Hello World!"));
-// api.get("/users", async (req, res) => {
-//   const databaseRes = await client.query("SELECT * from users");
-//   const users = databaseRes.rows[0];
+api.get("/users", async (req, res) => {
+  const databaseRes = await client.query("SELECT * from users");
+  const users = databaseRes.rows[0];
 
-//   res.send(users);
-// });
+  res.send(users);
+});
 
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
