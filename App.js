@@ -19,11 +19,12 @@ app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
 );
 
-// const client = new Client({
-//   database: "postgres",
-//   user: "app_user",
-//   password: "1234",
-// });
+const client = new Client({
+  database: "postgres",
+  user: "app_user",
+  password: "1234",
+  connectionString: process.env.DATABASE_URL,
+});
 
 // client
 //   .connect()
