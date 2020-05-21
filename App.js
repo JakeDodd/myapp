@@ -26,11 +26,11 @@ const client = new Client({
   connectionString: process.env.DATABASE_URL,
 });
 
-// client
-//   .connect()
-//   .then(() => {
-//     console.log("Connected to the database!");
-//   })
-//   .catch((err) => {
-//     console.error("Could not connect to database! ", err);
-//   });
+client
+  .connect()
+  .then(() => {
+    console.log("Connected to the database!");
+  })
+  .catch((err) => {
+    console.error("Could not connect to database! ", err);
+  });
