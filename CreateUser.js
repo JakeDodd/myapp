@@ -5,7 +5,7 @@ const client = new Client({
   database: "postgres",
   user: "app_user",
   password: "1234",
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL
 });
 
 client
@@ -13,10 +13,13 @@ client
   .then(() => {
     console.log("Connected to the database!");
   })
-  .catch((err) => {
+  .catch(err => {
     console.error("Could not connect to database! ", err);
   });
 
-var CreateUser = function (userData) {
+var CreateUser = function(userData) {
   var SteamID = userData.steamid;
+  var username = userData.personaname;
+  var fullname = userData.realname;
+  var location = userData.loccountrycode;
 };

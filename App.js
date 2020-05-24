@@ -13,27 +13,27 @@ const port = process.env.PORT || 3002;
 const api = express.Router();
 app.use("/api", api);
 
-const client = new Client({
-  database: "postgres",
-  user: "app_user",
-  password: "1234",
-  connectionString: process.env.DATABASE_URL,
-});
+// const client = new Client({
+//   database: "postgres",
+//   user: "app_user",
+//   password: "1234",
+//   connectionString: process.env.DATABASE_URL,
+// });
 
-client
-  .connect()
-  .then(() => {
-    console.log("Connected to the database!");
-  })
-  .catch((err) => {
-    console.error("Could not connect to database! ", err);
-  });
+// client
+//   .connect()
+//   .then(() => {
+//     console.log("Connected to the database!");
+//   })
+//   .catch((err) => {
+//     console.error("Could not connect to database! ", err);
+//   });
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser(function(user, done) {
   done(null, user);
 });
 
-passport.deserializeUser(function (obj, done) {
+passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
@@ -42,11 +42,11 @@ passport.use(
     {
       returnURL: "http://localhost:3002/auth/steam/return",
       realm: "http://localhost:3002/",
-      apiKey: "14491962C393719A3C8CDCAB8D91BB12",
+      apiKey: "14491962C393719A3C8CDCAB8D91BB12"
     },
-    function (identifier, profile, done) {
+    function(identifier, profile, done) {
       // asynchronous verification, for effect...
-      process.nextTick(function () {
+      process.nextTick(function() {
         // To keep the example simple, the user's Steam profile is returned to
         // represent the logged-in user.  In a typical application, you would want
         // to associate the Steam account with a user record in your database,
@@ -78,7 +78,7 @@ app.use(
     secret: "your secret",
     name: "name of session id",
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: true
   })
 );
 
@@ -89,12 +89,12 @@ app.use(passport.session());
 app.use(express.static(__dirname + "/../../public"));
 
 api.get("/", (req, res) => res.send("Hello World!"));
-api.get("/users", async (req, res) => {
-  const databaseRes = await client.query("SELECT * from users");
-  const users = databaseRes.rows[0];
+// api.get("/users", async (req, res) => {
+//   const databaseRes = await client.query("SELECT * from users");
+//   const users = databaseRes.rows[0];
 
-  res.send(users);
-});
+//   res.send(users);
+// });
 
 // GET /auth/steam
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -104,7 +104,7 @@ api.get("/users", async (req, res) => {
 app.get(
   "/auth/steam",
   passport.authenticate("steam", { failureRedirect: "/api" }),
-  function (req, res) {
+  function(req, res) {
     res.redirect("/api");
   }
 );
@@ -117,7 +117,7 @@ app.get(
 app.get(
   "/auth/steam/return",
   passport.authenticate("steam", { failureRedirect: "/api" }),
-  function (req, res) {
+  function(req, res) {
     res.redirect("/api");
   }
 );
@@ -128,7 +128,7 @@ app.listen(port, () =>
 
 request(
   "https://api.opendota.com/api/players/191652423/recentMatches?api_key=14491962C393719A3C8CDCAB8D91BB12",
-  function (error, response, body) {
+  function(error, response, body) {
     if (!error && response.statusCode == 200) {
       const a = body.replace("[", "");
       const b = a.replace("]", "");
