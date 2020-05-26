@@ -9,6 +9,7 @@ var SteamStrategy = require("passport-steam");
 var request = require("request");
 var User = require("./models/User");
 var cookieParser = require("cookie-parser");
+const { isProduction } = require("./utils/constants");
 
 const redis = require("redis");
 
@@ -60,9 +61,15 @@ passport.deserializeUser(async function (userId, done) {
 passport.use(
   new SteamStrategy(
     {
-      returnURL: "http://localhost:3002/api/auth/steam/return",
-      realm: "http://localhost:3002/",
-      apiKey: "14491962C393719A3C8CDCAB8D91BB12",
+      returnURL: `${
+        isProduction
+          ? "https://my-first-node-app1.herokuapp.com"
+          : "http://localhost:3002"
+      }/api/auth/steam/return`,
+      realm: isProduction
+        ? "https://my-first-node-app1.herokuapp.com"
+        : "http://localhost:3002",
+      apiKey: process.env.STEAM_API_KEY,
     },
     function (identifier, profile, done) {
       // asynchronous verification, for effect...
