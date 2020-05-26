@@ -2,10 +2,13 @@ const { Client } = require("pg");
 var request = require("request");
 
 const client = new Client({
-  database: "postgres",
-  user: "app_user",
-  password: "1234",
+  // database: "postgres",
+  // user: "app_user",
+  // password: "1234",
   connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 client
@@ -17,8 +20,8 @@ client
     console.error("Could not connect to database! ", err);
   });
 
-const User = {
-  createUser: function (userData) {
+class User {
+  static create(userData) {
     const text =
       "INSERT INTO user_profile (steamid, username, fullname, loc_code, rank_medal) VALUES ($1, $2, $3, $4, $5) RETURNING *";
     const values = [
@@ -28,20 +31,27 @@ const User = {
       userData.loccountrycode,
       "",
     ];
-    client.query("BEGIN", (err) => {
-      err
-        ? console.log("Error starting transaction", err)
-        : console.log("begin successful");
-      client.query(text, values, (err, res) => {
-        err ? console.log(err) : console.log(res.rows);
-        client.query("COMMIT", (err) => {
-          err
-            ? console.log("Error committing transaction", err)
-            : console.log("commit successful");
-        });
+    client.query(text, values, (err, res) => {
+      err ? console.log(err) : console.log(res.rows);
+    });
+  }
+
+  static getById(userId) {
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM user_profile WHERE steamid = $1";
+      const value = [userId];
+
+      client.query(sql, value, (err, res) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          // resolve(res);
+          resolve(res.rows[0]);
+        }
       });
     });
-  },
-};
+  }
+}
 
 module.exports = User;

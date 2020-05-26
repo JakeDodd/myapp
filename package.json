@@ -17,11 +17,15 @@
   },
   "homepage": "https://github.com/JakeDodd/myapp#readme",
   "dependencies": {
+    "connect-redis": "^4.0.4",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "passport": "^0.4.1",
     "passport-steam": "^1.0.14",
-    "pg": "^8.2.1"
+    "pg": "^8.2.1",
+    "redis": "^3.0.2"
   }
 }

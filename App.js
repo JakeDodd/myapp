@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const { Client } = require("pg");
 const cors = require("cors");
@@ -6,26 +7,60 @@ var util = require("util");
 var session = require("express-session");
 var SteamStrategy = require("passport-steam");
 var request = require("request");
-var user = require("./models/User");
+var User = require("./models/User");
+var cookieParser = require("cookie-parser");
+
+const redis = require("redis");
+
+let RedisStore = require("connect-redis")(session);
+let redisClient = redis.createClient(process.env.REDIS_URL);
 
 const app = express();
 const port = process.env.PORT || 3002;
 
-const api = express.Router();
-app.use("/api", api);
+app.set("views", __dirname + "/views");
+app.set("view engine", "ejs");
+
+app.use(cookieParser());
+
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: "your-secret",
+    cookie: {
+      secure: false,
+    },
+    name: "s",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+// Initialize Passport!  Also use passport.session() middleware, to support
+// persistent login sessions (recommended).
+app.use(passport.initialize());
+app.use(passport.session());
 
 passport.serializeUser(function (user, done) {
-  done(null, user);
+  console.log("serialize user");
+  done(null, user.id);
 });
 
-passport.deserializeUser(function (obj, done) {
-  done(null, obj);
+// comment
+passport.deserializeUser(async function (userId, done) {
+  try {
+    const user = await User.getById(userId);
+    console.log({ deserializeUser: user });
+    done(null, user);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 passport.use(
   new SteamStrategy(
     {
-      returnURL: "http://localhost:3002/auth/steam/return",
+      returnURL: "http://localhost:3002/api/auth/steam/return",
       realm: "http://localhost:3002/",
       apiKey: "14491962C393719A3C8CDCAB8D91BB12",
     },
@@ -39,7 +74,7 @@ passport.use(
         profile.identifier = identifier;
         console.log(identifier.slice(37));
         console.log(profile._json);
-        user.createUser(profile._json);
+        User.create(profile._json);
 
         // request(
         //   "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=14491962C393719A3C8CDCAB8D91BB12&steamids=" +
@@ -55,39 +90,23 @@ passport.use(
     }
   )
 );
+// app.use(express.static(__dirname + "/../../public"));
 
-app.set("views", __dirname + "/views");
-app.set("view engine", "ejs");
-
-app.use(
-  session({
-    secret: "your secret",
-    name: "name of session id",
-    resave: true,
-    saveUninitialized: true,
-  })
-);
-
-// Initialize Passport!  Also use passport.session() middleware, to support
-// persistent login sessions (recommended).
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.static(__dirname + "/../../public"));
+const api = express.Router();
+app.use("/api", api);
 
 api.get("/", (req, res) => res.send("Hello World!"));
-// api.get("/users", async (req, res) => {
-//   const databaseRes = await client.query("SELECT * from users");
-//   const users = databaseRes.rows[0];
-
-//   res.send(users);
-// });
+api.get("/me", (req, res) => {
+  console.log({ req: req.user });
+  res.send(req.user);
+});
 
 // GET /auth/steam
 //   Use passport.authenticate() as route middleware to authenticate the
 //   request.  The first step in Steam authentication will involve redirecting
 //   the user to steamcommunity.com.  After authenticating, Steam will redirect the
 //   user back to this application at /auth/steam/return
-app.get(
+api.get(
   "/auth/steam",
   passport.authenticate("steam", { failureRedirect: "/api" }),
   function (req, res) {
@@ -100,7 +119,7 @@ app.get(
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
-app.get(
+api.get(
   "/auth/steam/return",
   passport.authenticate("steam", { failureRedirect: "/api" }),
   function (req, res) {
