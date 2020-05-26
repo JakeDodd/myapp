@@ -7,9 +7,10 @@ var util = require("util");
 var session = require("express-session");
 var SteamStrategy = require("passport-steam");
 var request = require("request");
-var User = require("./models/User");
+var User = require("./src/models/User");
 var cookieParser = require("cookie-parser");
-const { isProduction } = require("./utils/constants");
+const { isProduction } = require("./src/utils/constants");
+const path = require("path");
 
 const redis = require("redis");
 
@@ -43,7 +44,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function (user, done) {
-  console.log("serialize user");
   done(null, user.id);
 });
 
@@ -51,7 +51,6 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(async function (userId, done) {
   try {
     const user = await User.getById(userId);
-    console.log({ deserializeUser: user });
     done(null, user);
   } catch (err) {
     console.error(err);
@@ -79,8 +78,6 @@ passport.use(
         // to associate the Steam account with a user record in your database,
         // and return that user instead.
         profile.identifier = identifier;
-        console.log(identifier.slice(37));
-        console.log(profile._json);
         User.create(profile._json);
 
         // request(
@@ -97,14 +94,12 @@ passport.use(
     }
   )
 );
-// app.use(express.static(__dirname + "/../../public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 const api = express.Router();
 app.use("/api", api);
 
-api.get("/", (req, res) => res.send("Hello World!"));
 api.get("/me", (req, res) => {
-  console.log({ req: req.user });
   res.send(req.user);
 });
 
@@ -134,17 +129,21 @@ api.get(
   }
 );
 
+api.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
 );
 
-request(
-  "https://api.opendota.com/api/players/191652423/recentMatches?api_key=14491962C393719A3C8CDCAB8D91BB12",
-  function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      const a = body.replace("[", "");
-      const b = a.replace("]", "");
-      // console.log(b);
-    }
-  }
-);
+// request(
+//   "https://api.opendota.com/api/players/191652423/recentMatches?api_key=14491962C393719A3C8CDCAB8D91BB12",
+//   function (error, response, body) {
+//     if (!error && response.statusCode == 200) {
+//       const a = body.replace("[", "");
+//       const b = a.replace("]", "");
+//       // console.log(b);
+//     }
+//   }
+// );
