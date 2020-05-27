@@ -1,0 +1,8 @@
+.steamImg {
+    background: url(https://steamcdn-a.akamaihd.net/steamcommunity/public/images/steamworks_docs/english/sits_large_border.png);
+    padding: 25px 58px;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+}

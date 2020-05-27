@@ -129,7 +129,9 @@ api.get(
   }
 );
 
-api.get("*", (req, res) => {
+api.get("*", (req, res) => res.send());
+
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 

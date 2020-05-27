@@ -1,0 +1,32 @@
+{
+  "name": "myapp",
+  "version": "1.0.0",
+  "description": "nodejs server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon --watch src index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JakeDodd/myapp.git"
+  },
+  "author": "Jake",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JakeDodd/myapp/issues"
+  },
+  "homepage": "https://github.com/JakeDodd/myapp#readme",
+  "dependencies": {
+    "connect-redis": "^4.0.4",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "passport": "^0.4.1",
+    "passport-steam": "^1.0.14",
+    "pg": "^8.2.1",
+    "redis": "^3.0.2"
+  }
+}
